@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oumayma Bramid - Full-Stack Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background: #0a0a0f;
+        }
+        
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4, #10b981, #f59e0b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .floating-card {
+            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+        
+        .floating-card:nth-child(even) {
+            animation-delay: -3s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-20px) rotateX(5deg); }
+        }
+        
+        .skill-bar {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skill-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: #8b5cf6;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .project-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            background: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+        }
+        
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4, #10b981, #f59e0b);
+            background-size: 300% 300%;
+            animation: gradient-shift 4s ease infinite;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+        }
+        
+        .tech-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            color: #60a5fa;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-badge:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .tech-badge.html { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+        .tech-badge.css { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+        .tech-badge.js { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24; }
+        .tech-badge.php { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); color: #a78bfa; }
+        .tech-badge.laravel { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+        .tech-badge.vue { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
+        .tech-badge.react { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.3); color: #22d3ee; }
+        .tech-badge.node { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #4ade80; }
+        
+        .project-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        
+        .project-link.primary {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+        
+        .project-link.primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .project-link.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e5e7eb;
+        }
+        
+        .project-link.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .project-status {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-live {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .status-github {
+            background: linear-gradient(135deg, #6b7280, #374151);
+            color: white;
+            box-shadow: 0 0 20px rgba(107, 114, 128, 0.4);
+        }
+
+        .status-development {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .experience-timeline {
+            position: relative;
+        }
+        
+        .experience-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #8b5cf6, #06b6d4, #10b981);
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 12px;
+            width: 18px;
+            height: 18px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            border: 3px solid #0a0a0f;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        
+        .morphing-bg {
+            background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f0f23 50%, #0a0a0f 100%);
+            background-size: 400% 400%;
+            animation: morph 20s ease infinite;
+        }
+        
+        @keyframes morph {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8b5cf6, #06b6d4, #10b981, transparent);
+            margin: 4rem 0;
+        }
+
+        .language-stats {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .language-stat {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .floating-card {
+                animation: none;
+            }
+            
+            .project-links {
+                flex-direction: column;
+            }
+            
+            .project-status {
+                position: static;
+                margin-bottom: 1rem;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body class="morphing-bg text-white">
+    <!-- Canvas 3D Background -->
+    <div id="canvas-container"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-morphism">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold gradient-text font-mono">{'<OB/>'}</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link hover:text-purple-400 transition-colors">Home</a>
+                    <a href="#about" class="nav-link hover:text-purple-400 transition-colors">About</a>
+                    <a href="#skills" class="nav-link hover:text-purple-400 transition-colors">Skills</a>
+                    <a href="#experience" class="nav-link hover:text-purple-400 transition-colors">Experience</a>
+                    <a href="#projects" class="nav-link hover:text-purple-400 transition-colors">Projects</a>
+                    <a href="#certifications" class="nav-link hover:text-purple-400 transition-colors">Certifications</a>
+                    <a href="#contact" class="nav-link hover:text-purple-400 transition-colors">Contact</a>
+                </div>
+                <button id="menu-toggle" class="md:hidden text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative">
+        <div class="container mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Profile Image -->
+            <div class="flex justify-center lg:justify-start order-1 lg:order-1">
+                <div class="relative floating-card">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 rounded-full blur-3xl opacity-30 neon-glow"></div>
+                    <div class="relative w-80 h-80 rounded-full overflow-hidden border-4 border-white/20 glass-morphism">
+                        <img src="https://media.licdn.com/dms/image/v2/D4E22AQGqcU9seqy0tg/feedshare-shrink_1280/B4EZSI_xWDGYAo-/0/1737465209382?e=1757548800&v=beta&t=pGz9dYOcEeOGyYxAvBbq7p76v8-lXJOsVFZwuiwJS8g" alt="Oumayma Bramid" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -top-4 -right-4 w-6 h-6 bg-green-400 rounded-full animate-ping"></div>
+                    <div class="absolute -bottom-4 -left-4 w-8 h-8 bg-blue-400 rounded-full animate-bounce"></div>
+                    <div class="absolute top-1/2 -left-8 w-4 h-4 bg-purple-400 rounded-full animate-pulse"></div>
+                </div>
+            </div>
+            
+            <!-- Hero Text -->
+            <div class="text-center lg:text-left order-2 lg:order-2">
+                <div class="mb-4">
+                    <span class="px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-mono border border-purple-500/30">
+                        💻 Available for new projects
+                    </span>
+                </div>
+                <br>
+                <h1 class="text-6xl lg:text-8xl font-black mb-6 leading-tight">
+                    <span class="gradient-text">Oumayma</span><br>
+                    <span class="gradient-text">Bramid</span>
+                </h1>
+                
+                <div class="text-2xl lg:text-3xl text-gray-300 mb-4 h-16 font-mono">
+                    <span id="typing-text" class="typing-cursor"></span>
+                </div>
+                
+                <p class="text-lg text-gray-400 mb-8 leading-relaxed max-w-lg">
+                    Full-Stack Developer specialized in <span class="text-purple-400 font-semibold">React.js</span>, 
+                    <span class="text-blue-400 font-semibold">Node.js</span> and modern technologies. 
+                    Passionate about innovation and creating exceptional user experiences.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 justify-center lg:justify-start mb-8">
+                    <button onclick="scrollToSection('contact')" class="px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full font-semibold hover:scale-105 transition-transform shadow-lg neon-glow">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Contact Me
+                    </button>
+                    <button onclick="window.open('https://github.com/OumaymaBrd', '_blank')" class="px-8 py-4 border-2 border-purple-400 rounded-full font-semibold hover:bg-purple-400 transition-colors glass-morphism">
+                        <i class="fab fa-github mr-2"></i>
+                        GitHub
+                    </button>
+                    <a href="https://www.linkedin.com/in/oumayma-bramid-475a0124b/" target="_blank" 
+   class="px-8 py-4 border-2 border-blue-600 rounded-full font-semibold hover:bg-blue-600 transition-colors glass-morphism inline-flex items-center">
+    <i class="fab fa-linkedin mr-2"></i>
+    LinkedIn Profile
+</a>
+
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold gradient-text">3+</div>
+                        <div class="text-sm text-gray-400">Years</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold gradient-text">50+</div>
+                        <div class="text-sm text-gray-400">Projects</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold gradient-text">8+</div>
+                        <div class="text-sm text-gray-400">Technologies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fas fa-chevron-down text-2xl text-purple-400"></i>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- About Section -->
+    <section id="about" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-bold text-center mb-16 gradient-text">About Me</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <h3 class="text-3xl font-bold mb-6 text-purple-300">My Journey</h3>
+                    <p class="text-gray-300 leading-relaxed mb-6">
+                        Graduate of <span class="text-purple-400 font-semibold">Youcode Safi (UM6P)</span> in 2024 
+                        and the <span class="text-blue-400 font-semibold">Faculty of Sciences and Techniques of Settat</span>, 
+                        I am a Full-Stack Developer passionate about modern technologies.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed mb-6">
+                        My expertise covers Frontend development with <span class="text-cyan-400 font-semibold">React.js</span>, 
+                        <span class="text-blue-400 font-semibold">Vue.js</span>, and Backend with 
+                        <span class="text-green-400 font-semibold">Node.js</span>, 
+                        <span class="text-purple-400 font-semibold">PHP/Laravel</span>, and 
+                        <span class="text-blue-500 font-semibold">Go</span>.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Specialized in creating modern, high-performance, and scalable web applications, 
+                        with strong experience in databases (MySQL, PostgreSQL, MongoDB) and 
+                        cloud deployment (AWS).
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="glass-morphism rounded-2xl p-6 text-center floating-card neon-glow">
+                        <i class="fas fa-code text-4xl text-purple-400 mb-4"></i>
+                        <h4 class="text-xl font-bold mb-2">50+</h4>
+                        <p class="text-gray-400">Completed Projects</p>
+                    </div>
+                    <div class="glass-morphism rounded-2xl p-6 text-center floating-card neon-glow">
+                        <i class="fas fa-graduation-cap text-4xl text-blue-400 mb-4"></i>
+                        <h4 class="text-xl font-bold mb-2">4</h4>
+                        <p class="text-gray-400">Degrees</p>
+                    </div>
+                    <div class="glass-morphism rounded-2xl p-6 text-center floating-card neon-glow">
+                        <i class="fas fa-certificate text-4xl text-green-400 mb-4"></i>
+                        <h4 class="text-xl font-bold mb-2">3+</h4>
+                        <p class="text-gray-400">Certifications</p>
+                    </div>
+                    <div class="glass-morphism rounded-2xl p-6 text-center floating-card neon-glow">
+                        <i class="fas fa-briefcase text-4xl text-yellow-400 mb-4"></i>
+                        <h4 class="text-xl font-bold mb-2">2</h4>
+                        <p class="text-gray-400">Professional Internships</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-bold text-center mb-16 gradient-text">Technical Skills</h2>
+            
+            <div class="grid lg:grid-cols-3 gap-8 mb-12">
+                <!-- Frontend -->
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center neon-glow">
+                            <i class="fas fa-laptop-code text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-blue-300">Frontend</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">HTML/CSS</span>
+                                <span class="text-blue-400">95%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">React.js</span>
+                                <span class="text-blue-400">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Vue.js</span>
+                                <span class="text-blue-400">85%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">JavaScript</span>
+                                <span class="text-blue-400">92%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Tailwind CSS</span>
+                                <span class="text-blue-400">88%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style="width: 88%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backend -->
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center neon-glow">
+                            <i class="fas fa-server text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-purple-300">Backend</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">PHP/Laravel</span>
+                                <span class="text-purple-400">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Node.js</span>
+                                <span class="text-purple-400">85%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Go</span>
+                                <span class="text-purple-400">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Express.js</span>
+                                <span class="text-purple-400">80%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Spring Boot</span>
+                                <span class="text-purple-400">70%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Database & Tools -->
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center neon-glow">
+                            <i class="fas fa-database text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-green-300">Databases & Tools</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">MySQL</span>
+                                <span class="text-green-400">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">PostgreSQL</span>
+                                <span class="text-green-400">85%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">MongoDB</span>
+                                <span class="text-green-400">80%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">Git/GitHub</span>
+                                <span class="text-green-400">95%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 h-2 rounded-full" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-mono">AWS</span>
+                                <span class="text-green-400">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2 skill-bar">
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Skills -->
+            <div class="glass-morphism rounded-3xl p-8">
+                <h3 class="text-2xl font-bold text-center mb-8 gradient-text">Other Skills</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="flex flex-wrap gap-2">
+                        <h4 class="w-full text-lg font-semibold text-purple-300 mb-2">CSS Frameworks</h4>
+                        <span class="tech-badge px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm border border-blue-500/30">Bootstrap</span>
+                        <span class="tech-badge px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm border border-cyan-500/30">Tailwind</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <h4 class="w-full text-lg font-semibold text-green-300 mb-2">Design Tools</h4>
+                        <span class="tech-badge px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm border border-pink-500/30">Figma</span>
+                        <span class="tech-badge px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-sm border border-orange-500/30">Postman</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <h4 class="w-full text-lg font-semibold text-yellow-300 mb-2">Systems</h4>
+                        <span class="tech-badge px-3 py-1 bg-gray-500/20 text-gray-300 rounded-full text-sm border border-gray-500/30">Linux</span>
+                        <span class="tech-badge px-3 py-1 bg-blue-600/20 text-blue-300 rounded-full text-sm border border-blue-600/30">Windows Server</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <h4 class="w-full text-lg font-semibold text-red-300 mb-2">Methodologies</h4>
+                        <span class="tech-badge px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm border border-red-500/30">UML</span>
+                        <span class="tech-badge px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm border border-purple-500/30">Agile</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Experience Section -->
+    <section id="experience" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-bold text-center mb-16 gradient-text">Professional Experience</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="experience-timeline space-y-12">
+                    <!-- Stage Samed -->
+                    <div class="relative pl-16">
+                        <div class="timeline-dot" style="background: #f59e0b;"></div>
+                        <div class="glass-morphism rounded-3xl p-8 floating-card">
+                            <div class="flex flex-wrap justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-yellow-300">Internship - Full-Stack Developer</h3>
+                                    <p class="text-xl text-blue-400 font-semibold">Samed, Agadir</p>
+                                </div>
+                                <span class="px-4 py-2 bg-yellow-500/20 text-yellow-300 rounded-full text-sm font-mono border border-yellow-500/30">
+                                    May 2025 - July 2025
+                                </span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed mb-4">
+                                Development of modern web applications and maintenance of existing systems 
+                                in a dynamic professional environment.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">React.js</span>
+                                <span class="tech-badge px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Node.js</span>
+                                <span class="tech-badge px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">Full-Stack</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stage ARDI -->
+                    <div class="relative pl-16">
+                        <div class="timeline-dot" style="background: #10b981;"></div>
+                        <div class="glass-morphism rounded-3xl p-8 floating-card">
+                            <div class="flex flex-wrap justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-green-300">Internship - Full-Stack Developer</h3>
+                                    <p class="text-xl text-blue-400 font-semibold">ARDI Consulting, Laâyoune</p>
+                                </div>
+                                <span class="px-4 py-2 bg-green-500/20 text-green-300 rounded-full text-sm font-mono border border-green-500/30">
+                                    April 2022 - July 2022
+                                </span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed mb-4">
+                                Development of web and mobile applications, work on graphic design projects 
+                                and illustrations with Adobe Photoshop.
+                            </p>
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-green-300 mb-2">Skills developed:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-1">
+                                    <li>Adobe Photoshop and graphic design</li>
+                                    <li>User interface development</li>
+                                    <li>Creative project management</li>
+                                </ul>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm">Adobe Photoshop</span>
+                                <span class="tech-badge px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">Design</span>
+                                <span class="tech-badge px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">Full-Stack</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stage PFE -->
+                    <div class="relative pl-16">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-morphism rounded-3xl p-8 floating-card">
+                            <div class="flex flex-wrap justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-purple-300">Final Project Internship - Full-Stack Developer</h3>
+                                    <p class="text-xl text-blue-400 font-semibold">Big Master Sarl, Casablanca</p>
+                                </div>
+                                <span class="px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-mono border border-purple-500/30">
+                                    April 2024 - June 2024
+                                </span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed mb-4">
+                                Development of a centralized web platform for managing training and 
+                                non-conformities for Intelcia's clients.
+                            </p>
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-green-300 mb-2">Achievements:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-1">
+                                    <li>Design and development of a modern user interface</li>
+                                    <li>Integration of REST APIs for data management</li>
+                                    <li>Performance and user experience optimization</li>
+                                    <li>Testing and application deployment</li>
+                                </ul>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">React.js</span>
+                                <span class="tech-badge px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Node.js</span>
+                                <span class="tech-badge px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">MySQL</span>
+                                <span class="tech-badge px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm">Express.js</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stage Intelcia -->
+                    <div class="relative pl-16">
+                        <div class="timeline-dot" style="background: #06b6d4;"></div>
+                        <div class="glass-morphism rounded-3xl p-8 floating-card">
+                            <div class="flex flex-wrap justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-cyan-300">Internship - Web Developer</h3>
+                                    <p class="text-xl text-blue-400 font-semibold">Intelcia, Casablanca</p>
+                                </div>
+                                <span class="px-4 py-2 bg-cyan-500/20 text-cyan-300 rounded-full text-sm font-mono border border-cyan-500/30">
+                                    July 2024 - September 2024
+                                </span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed mb-4">
+                                Creation of a training platform to accelerate the skill development of reception agents, 
+                                allowing agents to access training previously provided in-company.
+                            </p>
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-green-300 mb-2">Technologies used:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-1">
+                                    <li>HTML5, CSS3, Tailwind CSS for the interface</li>
+                                    <li>JavaScript for interactions</li>
+                                    <li>PHP MVC for business logic</li>
+                                    <li>jQuery and AJAX for asynchronous requests</li>
+                                </ul>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-sm">HTML5</span>
+                                <span class="tech-badge px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">CSS3</span>
+                                <span class="tech-badge px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm">JavaScript</span>
+                                <span class="tech-badge px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">PHP</span>
+                                <span class="tech-badge px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- PROJECTS SECTION - NOUVELLE VERSION COMPLÈTE -->
+    <section id="projects" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <div class="flex items-center justify-center mb-6">
+                    <i class="fas fa-code text-4xl text-purple-400 mr-4"></i>
+                    <h2 class="text-5xl font-bold gradient-text">Key Projects</h2>
+                </div>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Discover my technical achievements, from modern web applications to complex systems, 
+                    each project reflects my passion for innovation and technical excellence.
+                </p>
+            </div>
+            
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <!-- 1. Architecture Microservices Interactive -->
+                <div class="project-card">
+                    <div class="project-status status-live">
+                        <i class="fas fa-globe"></i>
+                        <span>LIVE</span>
+                    </div>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-3xl font-bold mb-4 text-white">Interactive Microservices Architecture</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                                Development of an interactive visualization platform for modern microservices architecture. 
+                                This educational application allows understanding communication patterns between services, 
+                                data flows, and architectural best practices. Integrates 3D animations and 
+                                real-time interactions for an immersive learning experience.
+                            </p>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-lg font-semibold text-purple-300 mb-3">Key features:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                                    <li>Interactive visualization of microservices architectures</li>
+                                    <li>3D animations to illustrate communication flows</li>
+                                    <li>Educational interface with detailed explanations</li>
+                                    <li>Responsive design adapted to all devices</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-badge js">JavaScript</span>
+                                <span class="tech-badge html">HTML5</span>
+                                <span class="tech-badge css">CSS3</span>
+                                <span class="tech-badge">Three.js</span>
+                                <span class="tech-badge">3D Animations</span>
+                                <span class="tech-badge">Interactive Design</span>
+                            </div>
+                            
+                            <div class="project-links">
+                                <a href="https://oumaymabrd.github.io/Architecture-Microservices-Interactive/" target="_blank" class="project-link primary">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    View Live Demo
+                                </a>
+                                <a href="https://github.com/OumaymaBrd/Architecture-Microservices-Interactive" target="_blank" class="project-link secondary">
+                                    <i class="fab fa-github"></i>
+                                    Source Code
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="bg-gradient-to-br from-green-500/20 to-teal-500/20 rounded-2xl p-8 text-center">
+                                <i class="fas fa-sitemap text-6xl text-green-400 mb-4"></i>
+                                <div class="text-sm text-gray-400 mb-2">Project Status</div>
+                                <div class="text-green-400 font-semibold">Deployed & Functional</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Chat Temps Réel WhatsApp-Style -->
+                <div class="project-card">
+                    <div class="project-status status-github">
+                        <i class="fab fa-github"></i>
+                        <span>REPOSITORY</span>
+                    </div>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-3xl font-bold mb-4 text-white">WhatsApp-Style Real-Time Chat</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                                Complete instant messaging application with voice and video call support, 
+                                similar to WhatsApp. Implements WebRTC for peer-to-peer communications, 
+                                Socket.io for real-time messaging, and a modern and intuitive user interface. 
+                                Group management, file sharing, and push notifications.
+                            </p>
+                            
+                            <div class="language-stats mb-6">
+                                <div class="language-stat" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">
+                                    JavaScript 67.1%
+                                </div>
+                                <div class="language-stat" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">
+                                    HTML 16.8%
+                                </div>
+                                <div class="language-stat" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">
+                                    CSS 16.1%
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-lg font-semibold text-blue-300 mb-3">Advanced features:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                                    <li>Instant messaging with Socket.io</li>
+                                    <li>Voice and video calls with WebRTC</li>
+                                    <li>Modern and responsive user interface</li>
+                                    <li>Group and private conversation management</li>
+                                    <li>File and media sharing</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-badge js">JavaScript</span>
+                                <span class="tech-badge">WebRTC</span>
+                                <span class="tech-badge">Socket.io</span>
+                                <span class="tech-badge node">Node.js</span>
+                                <span class="tech-badge">Real-time</span>
+                                <span class="tech-badge">P2P Communication</span>
+                            </div>
+                            
+                            <div class="project-links">
+                                <a href="https://github.com/OumaymaBrd/Chat_temps_reel" target="_blank" class="project-link primary">
+                                    <i class="fab fa-github"></i>
+                                    GitHub Source Code
+                                </a>
+                                <!-- <a href="#" class="project-link secondary">
+                                    <i class="fas fa-play"></i>
+                                    Interactive Demo
+                                </a> -->
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-2xl p-8 text-center">
+                                <i class="fas fa-comments text-6xl text-blue-400 mb-4"></i>
+                                <div class="text-sm text-gray-400 mb-2">Project Type</div>
+                                <div class="text-blue-400 font-semibold">Real-Time Application</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Makete Animé Futuriste -->
+                <div class="project-card">
+                    <div class="project-status status-live">
+                        <i class="fas fa-globe"></i>
+                        <span>LIVE</span>
+                    </div>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-3xl font-bold mb-4 text-white">Futuristic Animated Mockup</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                                Creative project of advanced web animations demonstrating mastery of modern animation technologies. 
+                                Uses GSAP for smooth animations, WebGL for 3D effects, and CSS3 for sophisticated transitions. 
+                                This technical demonstration presents dynamic and interactive interfaces 
+                                with impressive visual effects.
+                            </p>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-lg font-semibold text-pink-300 mb-3">Animation technologies:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                                    <li>GSAP (GreenSock) for complex animations</li>
+                                    <li>CSS3 animations and advanced transitions</li>
+                                    <li>WebGL for 3D effects and shaders</li>
+                                    <li>JavaScript for dynamic interactions</li>
+                                    <li>Mobile performance optimizations</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-badge js">JavaScript</span>
+                                <span class="tech-badge">GSAP</span>
+                                <span class="tech-badge css">CSS3 Animations</span>
+                                <span class="tech-badge">WebGL</span>
+                                <span class="tech-badge">Interactive Design</span>
+                                <span class="tech-badge">Performance Optimization</span>
+                            </div>
+                            
+                            <div class="project-links">
+                                <a href="https://oumaymabrd.github.io/makete_anime/" target="_blank" class="project-link primary">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    View Live Demo
+                                </a>
+                                <a href="https://github.com/OumaymaBrd/makete_anime" target="_blank" class="project-link secondary">
+                                    <i class="fab fa-github"></i>
+                                    Source Code
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="bg-gradient-to-br from-pink-500/20 to-rose-500/20 rounded-2xl p-8 text-center">
+                                <i class="fas fa-magic text-6xl text-pink-400 mb-4"></i>
+                                <div class="text-sm text-gray-400 mb-2">Specialty</div>
+                                <div class="text-pink-400 font-semibold">Creative Animations</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Plateforme Communautaire YouCode -->
+                <div class="project-card">
+                    <div class="project-status status-development">
+                        <i class="fas fa-code"></i>
+                        <span>IN DEVELOPMENT</span>
+                    </div>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-3xl font-bold mb-4 text-white">YouCode Community Platform</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                                Integrated system for managing events and educational resources for YouCode school. 
+                                This comprehensive platform enables user management, event organization, 
+                                sharing of educational resources, and includes a geolocation system for events. 
+                                Modern architecture with Laravel for the backend and Vue.js for a reactive user interface.
+                            </p>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-lg font-semibold text-purple-300 mb-3">Main modules:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                                    <li>User management and authentication</li>
+                                    <li>Event system with geolocation</li>
+                                    <li>Educational resource sharing and management</li>
+                                    <li>Complete administration interface</li>
+                                    <li>RESTful API for future integrations</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-badge laravel">Laravel</span>
+                                <span class="tech-badge php">PHP</span>
+                                <span class="tech-badge vue">Vue.js</span>
+                                <span class="tech-badge">MySQL</span>
+                                <span class="tech-badge">RESTful API</span>
+                                <span class="tech-badge">Geolocation</span>
+                            </div>
+                            
+                            <div class="project-links">
+                                <a href="https://github.com/OumaymaBrd" target="_blank" class="project-link primary">
+                                    <i class="fab fa-github"></i>
+                                    View Development
+                                </a>
+                                <a href="#" class="project-link secondary">
+                                    <i class="fas fa-info-circle"></i>
+                                    Documentation private
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-2xl p-8 text-center">
+                                <i class="fas fa-rocket text-6xl text-purple-400 mb-4"></i>
+                                <div class="text-sm text-gray-400 mb-2">Status</div>
+                                <div class="text-purple-400 font-semibold">Active Development</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Collection Projets PHP & Laravel -->
+                <div class="project-card">
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-3xl font-bold mb-4 text-white">PHP & Laravel Projects Collection</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                                Comprehensive set of projects developed in PHP and Laravel, including management systems, 
+                                robust REST APIs, e-commerce applications, and complete web platforms. 
+                                Each project demonstrates deep expertise in backend development, 
+                                MVC architecture, and development best practices.
+                            </p>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-lg font-semibold text-indigo-300 mb-3">Project types:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                                    <li>Business management systems (CRM, ERP)</li>
+                                    <li>E-commerce applications with integrated payment</li>
+                                    <li>REST APIs for mobile applications</li>
+                                    <li>Content management platforms (CMS)</li>
+                                    <li>Authentication and authorization systems</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-badge php">PHP</span>
+                                <span class="tech-badge laravel">Laravel</span>
+                                <span class="tech-badge">MySQL</span>
+                                <span class="tech-badge">MVC Architecture</span>
+                                <span class="tech-badge">RESTful APIs</span>
+                                <span class="tech-badge">Eloquent ORM</span>
+                            </div>
+                            
+                            <div class="project-links">
+                                <a href="https://github.com/OumaymaBrd?tab=repositories" target="_blank" class="project-link primary">
+                                    <i class="fab fa-github"></i>
+                                    View All Repositories
+                                </a>
+                                <!-- <a href="#" class="project-link secondary">
+                                    <i class="fas fa-code"></i>
+                                    Code Examples
+                                </a> -->
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl p-8 text-center">
+                                <i class="fab fa-php text-6xl text-indigo-400 mb-4"></i>
+                                <div class="text-sm text-gray-400 mb-2">Expertise</div>
+                                <div class="text-indigo-400 font-semibold">Backend Development</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Portfolio Interactif 3D -->
+                <div class="project-card">
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-3xl font-bold mb-4 text-white">3D Interactive Portfolio</h3>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                                Modern personal portfolio with immersive 3D animations, advanced visual effects, and responsive design. 
+                                Uses Three.js for 3D scenes, GSAP for smooth animations, and Tailwind CSS for modern design. 
+                                Complete demonstration of skills in modern frontend development and user experience design.
+                            </p>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-lg font-semibold text-yellow-300 mb-3">Technical features:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                                    <li>Interactive 3D scenes with Three.js</li>
+                                    <li>Smooth animations and GSAP transitions</li>
+                                    <li>Responsive and mobile-first design</li>
+                                    <li>Advanced performance optimizations</li>
+                                    <li>Intuitive and modern user interface</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-badge html">HTML5</span>
+                                <span class="tech-badge css">Tailwind CSS</span>
+                                <span class="tech-badge js">JavaScript</span>
+                                <span class="tech-badge">Three.js</span>
+                                <span class="tech-badge">GSAP</span>
+                                <span class="tech-badge">Responsive Design</span>
+                            </div>
+                            
+                            <div class="project-links">
+                                <a href="#home" class="project-link primary">
+                                    <i class="fas fa-eye"></i>
+                                    You are here!
+                                </a>
+                                <!-- <a href="https://github.com/OumaymaBrd" target="_blank" class="project-link secondary">
+                                    <i class="fab fa-github"></i>
+                                    Source Code
+                                </a> -->
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/3">
+                            <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl p-8 text-center">
+                                <i class="fas fa-globe text-6xl text-yellow-400 mb-4"></i>
+                                <div class="text-sm text-gray-400 mb-2">Status</div>
+                                <div class="text-yellow-400 font-semibold">Current Portfolio</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="text-center mt-16">
+                <div class="glass-morphism rounded-3xl p-8 max-w-4xl mx-auto">
+                    <h3 class="text-3xl font-bold mb-4 gradient-text">Interested in my projects?</h3>
+                    <p class="text-gray-300 text-lg mb-6">
+                        Each project represents an opportunity for learning and innovation. 
+                        Feel free to explore the source code and contact me to discuss collaborations.
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button onclick="window.open('https://github.com/OumaymaBrd', '_blank')" class="px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full font-semibold hover:scale-105 transition-transform shadow-lg neon-glow">
+                            <i class="fab fa-github mr-2"></i>
+                            View all my projects
+                        </button>
+                        <button onclick="scrollToSection('contact')" class="px-8 py-4 border-2 border-purple-400 rounded-full font-semibold hover:bg-purple-400 transition-colors glass-morphism">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Let's discuss
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Certifications Section -->
+    <section id="certifications" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-bold text-center mb-16 gradient-text">Certifications & Degrees</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- Certifications -->
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <h3 class="text-3xl font-bold mb-8 text-purple-300 text-center">
+                        <i class="fas fa-certificate mr-3"></i>Certifications
+                    </h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-database text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">SQL (Advanced)</h4>
+                                <p class="text-gray-400 text-sm">HackerRank</p>
+                                <span class="text-green-400 text-xs">Dec. 2024</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+                                <i class="fab fa-linux text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Linux Network Administrator</h4>
+                                <p class="text-gray-400 text-sm">Alison</p>
+                                <span class="text-blue-400 text-xs">Feb. 2023</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-tie text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Leadership & Communication</h4>
+                                <p class="text-gray-400 text-sm">LinkedIn - Nano Tips for Communication</p>
+                                <span class="text-purple-400 text-xs">May 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-palette text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">GOX Creative Mastery</h4>
+                                <p class="text-gray-400 text-sm">Adobe Suite, Social Media Marketing, Video Editing</p>
+                                <span class="text-orange-400 text-xs">Jan. 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-graduation-cap text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Continuous Learner</h4>
+                                <p class="text-gray-400 text-sm">Certiprof - Lifelong Learning 2025</p>
+                                <span class="text-indigo-400 text-xs">Apr. 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                                <i class="fab fa-aws text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">AWS Cloud Introduction</h4>
+                                <p class="text-gray-400 text-sm">Amazon Web Services - Cloud 101</p>
+                                <span class="text-yellow-400 text-xs">May 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-database text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Oracle Database 12</h4>
+                                <p class="text-gray-400 text-sm">LinkedIn - Architecture & PL/SQL</p>
+                                <span class="text-red-400 text-xs">Jul. 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fab fa-python text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Python Data Visualization</h4>
+                                <p class="text-gray-400 text-sm">LinkedIn - Plotly, Seaborn, Matplotlib</p>
+                                <span class="text-green-400 text-xs">Jul. 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-tasks text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Advanced Scrum</h4>
+                                <p class="text-gray-400 text-sm">Project Management Institute</p>
+                                <span class="text-blue-400 text-xs">Jul. 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center">
+                                <i class="fab fa-linux text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Linux System Administration</h4>
+                                <p class="text-gray-400 text-sm">LinkedIn - Linux Kernel</p>
+                                <span class="text-gray-400 text-xs">Jun. 2025</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Linux System Programming</h4>
+                                <p class="text-gray-400 text-sm">Udemy - Practical Approach</p>
+                                <span class="text-purple-400 text-xs">May 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Diplômes -->
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <h3 class="text-3xl font-bold mb-8 text-green-300 text-center">
+                        <i class="fas fa-graduation-cap mr-3"></i>Degrees
+                    </h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Youcode Safi (UMGP)</h4>
+                                <p class="text-gray-400 text-sm">Full Stack Web Development</p>
+                                <span class="text-yellow-400 text-xs">2024 - Current</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">FST Settat</h4>
+                                <p class="text-gray-400 text-sm">Bachelor's in Computer Engineering</p>
+                                <span class="text-blue-400 text-xs">2023 - 2024</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calculator text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">FST Settat</h4>
+                                <p class="text-gray-400 text-sm">DEUST in Mathematics, Computer Science and Physics</p>
+                                <span class="text-green-400 text-xs">2023 - 2022</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-atom text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">FST Errachidia</h4>
+                                <p class="text-gray-400 text-sm">DEUST in Mathematics, Computer Science and Physics</p>
+                                <span class="text-purple-400 text-xs">2020 - 2021</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-school text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">Hassan II High School</h4>
+                                <p class="text-gray-400 text-sm">Baccalaureate - Mathematics Sciences A</p>
+                                <span class="text-red-400 text-xs">2019 - 2020</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-bold text-center mb-16 gradient-text">Contact Me</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                <!-- Contact Info -->
+                <div class="space-y-8">
+                    <div class="glass-morphism rounded-3xl p-8 floating-card">
+                        <h3 class="text-3xl font-bold mb-8 text-purple-300">Let's Work Together</h3>
+                        <p class="text-gray-300 leading-relaxed mb-8">
+                            Ready to bring your most ambitious ideas to life! Whether it's a web project, 
+                            mobile app, or immersive 3D experience, I'm here to transform your vision into reality.
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center neon-glow">
+                                    <i class="fas fa-envelope text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Email</p>
+                                    <p class="text-white font-semibold">oumaymabramid@gmail.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-900 rounded-full flex items-center justify-center neon-glow">
+                                    <i class="fab fa-github text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">GitHub</p>
+                                    <p class="text-white font-semibold">github.com/OumaymaBrd</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-full flex items-center justify-center neon-glow">
+                                    <i class="fab fa-linkedin text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">LinkedIn</p>
+                                    <p class="text-white font-semibold">linkedin.com/in/oumayma-bramid</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center neon-glow">
+                                    <i class="fas fa-phone text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Phone</p>
+                                    <p class="text-white font-semibold">+212 701237397</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center neon-glow">
+                                    <i class="fas fa-map-marker-alt text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Location</p>
+                                    <p class="text-white font-semibold">Casablanca, Morocco</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 pt-8 border-t border-white/10">
+                            <h4 class="text-xl font-semibold mb-4 text-center gradient-text">Availability</h4>
+                            <div class="flex items-center justify-center space-x-2">
+                                <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                <span class="text-green-400 font-semibold">Available for new projects</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Form -->
+                <div class="glass-morphism rounded-3xl p-8 floating-card">
+                    <h3 class="text-2xl font-bold mb-6 text-center gradient-text">Send me a message</h3>
+                    <form class="space-y-6" onsubmit="handleFormSubmit(event)">
+                        <div>
+                            <label class="block text-gray-300 mb-2 font-semibold">Full name</label>
+                            <input type="text" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 glass-morphism" placeholder="Your full name">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2 font-semibold">Email</label>
+                            <input type="email" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 glass-morphism" placeholder="your@email.com">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2 font-semibold">Subject</label>
+                            <select class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:border-purple-400 focus:outline-none transition-colors text-white glass-morphism">
+                                <option value="" class="bg-gray-800">Choose a subject</option>
+                                <option value="projet-web" class="bg-gray-800">Web Project</option>
+                                <option value="collaboration" class="bg-gray-800">Collaboration</option>
+                                <option value="freelance" class="bg-gray-800">Freelance Work</option>
+                                <option value="autre" class="bg-gray-800">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2 font-semibold">Message</label>
+                            <textarea rows="5" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 resize-none glass-morphism" placeholder="Describe your project or request..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold hover:scale-105 transition-transform shadow-lg neon-glow">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="mt-16 text-center">
+                <h3 class="text-2xl font-bold mb-8 gradient-text">Follow Me</h3>
+                <div class="flex justify-center space-x-6">
+                    <a href="mailto:oumaymabramid@gmail.com" class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform neon-glow">
+                        <i class="fas fa-envelope text-white text-xl"></i>
+                    </a>
+                    <a href="https://github.com/OumaymaBrd" target="_blank" class="w-16 h-16 bg-gradient-to-r from-gray-700 to-gray-900 rounded-full flex items-center justify-center hover:scale-110 transition-transform neon-glow">
+                        <i class="fab fa-github text-white text-xl"></i>
+                    </a>
+                    <a href="https://linkedin.com/in/oumayma-bramid" target="_blank" class="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-800 rounded-full flex items-center justify-center hover:scale-110 transition-transform neon-glow">
+                        <i class="fab fa-linkedin text-white text-xl"></i>
+                    </a>
+                      <a href="https://discord.com/users/1018922835407798312" target="_blank" class="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-800 rounded-full flex items-center justify-center hover:scale-110 transition-transform neon-glow">
+    <i class="fab fa-discord text-white text-xl"></i>
+</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/10 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold gradient-text font-mono">{'<OB/>'}</h3>
+                    <p class="text-gray-400 mt-2">Passionate Full-Stack Developer</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8 mb-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-purple-300">Navigation</h4>
+                        <div class="space-y-2">
+                            <a href="#home" class="block text-gray-400 hover:text-purple-400 transition-colors">Home</a>
+                            <a href="#about" class="block text-gray-400 hover:text-purple-400 transition-colors">About</a>
+                            <a href="#skills" class="block text-gray-400 hover:text-purple-400 transition-colors">Skills</a>
+                            <a href="#projects" class="block text-gray-400 hover:text-purple-400 transition-colors">Projects</a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-blue-300">Services</h4>
+                        <div class="space-y-2">
+                            <p class="text-gray-400">Web Development</p>
+                            <p class="text-gray-400">Mobile Applications</p>
+                            <p class="text-gray-400">UI/UX Design</p>
+                            <p class="text-gray-400">Tech Consulting</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-green-300">Technologies</h4>
+                        <div class="space-y-2">
+                            <p class="text-gray-400">React.js & Vue.js</p>
+                            <p class="text-gray-400">Node.js & PHP</p>
+                            <p class="text-gray-400">MySQL & MongoDB</p>
+                            <p class="text-gray-400">AWS & Docker</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-white/10 pt-8">
+                    <p class="text-gray-400 mb-2">© 2025 Oumayma Bramid. All rights reserved.</p>
+                    <p class="text-gray-500 text-sm">Created with ❤️ and lots of coffee ☕</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script>
+        // GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Typing Animation
+        const texts = [
+            "Full-Stack Developer",
+            "Web Experience Creator",
+            "React & Node.js Specialist",
+            "Passionate About Innovation"
+        ];
+        
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingElement = document.getElementById('typing-text');
+        
+        function typeText() {
+            const currentText = texts[textIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            let typeSpeed = isDeleting ? 50 : 100;
+            
+            if (!isDeleting && charIndex === currentText.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(typeText, typeSpeed);
+        }
+        
+        typeText();
+        
+        // Three.js Scene
+        let scene, camera, renderer, particles, geometries = [];
+        
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            
+            // Particles
+            const particleGeometry = new THREE.BufferGeometry();
+            const particleCount = 2000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 200;
+                positions[i + 1] = (Math.random() - 0.5) * 200;
+                positions[i + 2] = (Math.random() - 0.5) * 200;
+                
+                colors[i] = Math.random() * 0.5 + 0.5;
+                colors[i + 1] = Math.random() * 0.5 + 0.5;
+                colors[i + 2] = 1;
+            }
+            
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+            
+            particles = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(particles);
+            
+            // Floating Geometries
+            const shapes = [
+                new THREE.BoxGeometry(2, 2, 2),
+                new THREE.SphereGeometry(1.5, 16, 16),
+                new THREE.ConeGeometry(1, 2, 8),
+                new THREE.OctahedronGeometry(1.5)
+            ];
+            
+            const materials = [
+                new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.3, wireframe: true }),
+                new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.3, wireframe: true }),
+                new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.3, wireframe: true }),
+                new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.3, wireframe: true })
+            ];
+            
+            for (let i = 0; i < 8; i++) {
+                const geometry = shapes[Math.floor(Math.random() * shapes.length)];
+                const material = materials[Math.floor(Math.random() * materials.length)];
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                mesh.position.set(
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100
+                );
+                
+                mesh.rotation.set(
+                    Math.random() * Math.PI,
+                    Math.random() * Math.PI,
+                    Math.random() * Math.PI
+                );
+                
+                geometries.push(mesh);
+                scene.add(mesh);
+            }
+            
+            camera.position.z = 50;
+            animate();
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate particles
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.001;
+            
+            // Animate floating geometries
+            geometries.forEach((mesh, index) => {
+                mesh.rotation.x += 0.01 + index * 0.001;
+                mesh.rotation.y += 0.01 + index * 0.001;
+                mesh.position.y += Math.sin(Date.now() * 0.001 + index) * 0.01;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Smooth scrolling
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Active navigation
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateActiveNav);
+        
+        // GSAP Animations
+        gsap.from(".floating-card", {
+            scrollTrigger: {
+                trigger: ".floating-card",
+                start: "top 80%"
+            },
+            y: 100,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: "power2.out"
+        });
+        
+        // GSAP Animations - Commented temporarily for debugging
+        /*
+        gsap.from(".project-card", {
+            scrollTrigger: {
+                trigger: "#projects",
+                start: "top 80%"
+            },
+            y: 100,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.1,
+            ease: "power2.out"
+        });
+        */
+        
+        // Form submission
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            // Show success message
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-check mr-2"></i>Message Sent!';
+            button.classList.add('bg-green-500');
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('bg-green-500');
+                button.disabled = false;
+                event.target.reset();
+            }, 3000);
+        }
+        
+        // Download CV function
+        function downloadCV() {
+            // Create a temporary link to download CV
+            const link = document.createElement('a');
+            link.href = '#'; // Replace with actual CV URL
+            link.download = 'Oumayma_Bramid_CV.pdf';
+            link.click();
+        }
+        
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const nav = document.querySelector('nav');
+        
+        menuToggle.addEventListener('click', () => {
+            nav.classList.toggle('mobile-menu-open');
+        });
+        
+        // Parallax effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.getElementById('canvas-container');
+            const speed = scrolled * 0.2;
+            parallax.style.transform = `translateY(${speed}px)`;
+        });
+        
+        // Debug function to check projects
+        function debugProjects() {
+            const projectCards = document.querySelectorAll('.project-card');
+            console.log(`Number of project cards found: ${projectCards.length}`);
+            projectCards.forEach((card, index) => {
+                console.log(`Project ${index + 1}:`, card.querySelector('h3')?.textContent);
+                console.log(`Visible:`, window.getComputedStyle(card).display !== 'none');
+            });
+        }
+        
+        // Initialize everything
+        window.addEventListener('load', () => {
+            initThreeJS();
+            updateActiveNav();
+            debugProjects(); // Added debug function
+        });
+        
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+        
+        // Cursor trail effect
+        let mouseX = 0, mouseY = 0;
+        let cursorTrail = [];
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            const trail = document.createElement('div');
+            trail.className = 'fixed w-1 h-1 bg-purple-400 rounded-full pointer-events-none z-40 opacity-70';
+            trail.style.left = mouseX + 'px';
+            trail.style.top = mouseY + 'px';
+            trail.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(trail);
+            
+            cursorTrail.push(trail);
+            
+            if (cursorTrail.length > 20) {
+                const oldTrail = cursorTrail.shift();
+                oldTrail.remove();
+            }
+            
+            setTimeout(() => {
+                trail.style.opacity = '0';
+                setTimeout(() => trail.remove(), 300);
+            }, 100);
+        });
+        
+        // Skill bars animation
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const skillBars = entry.target.querySelectorAll('.skill-bar div');
+                    skillBars.forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.transform = 'scaleX(1)';
+                            bar.style.transformOrigin = 'left';
+                            bar.style.transition = 'transform 1s ease-out';
+                        }, index * 200);
+                    });
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('#skills .glass-morphism').forEach(card => {
+            skillObserver.observe(card);
+        });
+        
+        // Console easter egg
+        console.log(`
+        🚀 Oumayma Bramid's Portfolio
+        ================================
+        
+        Passionate Full-Stack Developer
+        
+        Live projects:
+        • Interactive Microservices Architecture: https://oumaymabrd.github.io/Architecture-Microservices-Interactive/
+        • Futuristic Animated Mockup: https://oumaymabrd.github.io/makete_anime/
+        • WhatsApp-Style Real-Time Chat: https://github.com/OumaymaBrd/Chat_temps_reel
+        
+        Technologies used in this portfolio:
+        • HTML5 & CSS3
+        • JavaScript ES6+
+        • Three.js for 3D effects
+        • GSAP for animations
+        • Tailwind CSS for styling
+        
+        Contact me: oumaymabramid@gmail.com
+        GitHub: github.com/OumaymaBrd
+        
+        Thanks for visiting my portfolio! 💜
+        `);
+    </script>
+</body>
+</html>
